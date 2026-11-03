@@ -1,8 +1,5 @@
-const jsonResponse = (statusCode, body) => ({
-  statusCode,
-  headers: { "content-type": "application/json; charset=utf-8" },
-  body: JSON.stringify(body),
-});
+const jsonResponse = (status, body) =>
+  Response.json(body, { status });
 
 export default async (request) => {
   if (request.method !== "POST") {
@@ -11,7 +8,7 @@ export default async (request) => {
 
   let payload;
   try {
-    payload = JSON.parse(request.body || "");
+    payload = await request.json();
   } catch {
     return jsonResponse(400, { error: "Request body must be valid JSON." });
   }
