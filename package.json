@@ -1,0 +1,17 @@
+{
+  "name": "documents-project-netlify",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "mammoth": "^1.9.0",
+    "pdfjs-dist": "^5.4.149"
+  },
+  "devDependencies": {
+    "vite": "^6.4.1"
+  }
+}

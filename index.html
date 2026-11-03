@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="PDF, Word, text aur Markdown documents upload karke unmein jawab khojein."
+    />
+    <title>Document Q&amp;A</title>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-icon" aria-hidden="true">📚</div>
+        <div>
+          <p class="eyebrow">DOCUMENT ASSISTANT</p>
+          <h1>Document Q&amp;A</h1>
+          <p class="hero-copy">अपने दस्तावेज़ों से जवाब खोजें।</p>
+        </div>
+      </header>
+
+      <main>
+        <section class="card upload-card" aria-labelledby="upload-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">STEP 1</p>
+              <h2 id="upload-title">दस्तावेज़ जोड़ें</h2>
+            </div>
+            <span class="file-types">PDF · DOCX · TXT · MD</span>
+          </div>
+          <label class="dropzone" for="files">
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <span class="drop-title">फ़ाइल चुनने के लिए क्लिक करें</span>
+            <span class="muted">एक या एक से ज़्यादा दस्तावेज़</span>
+            <input id="files" type="file" accept=".pdf,.docx,.txt,.md" multiple />
+          </label>
+          <div id="file-status" class="file-status muted" aria-live="polite">
+            शुरू करने के लिए दस्तावेज़ अपलोड करें।
+          </div>
+          <div id="file-errors" class="messages" aria-live="polite"></div>
+        </section>
+
+        <section class="card ask-card" aria-labelledby="ask-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">STEP 2</p>
+              <h2 id="ask-title">सवाल पूछें</h2>
+            </div>
+            <button id="summary-button" class="button button-secondary" disabled>
+              सारांश
+            </button>
+          </div>
+          <form id="question-form">
+            <label class="sr-only" for="question">आपका सवाल</label>
+            <input
+              id="question"
+              type="text"
+              placeholder="उदाहरण: छुट्टी की policy क्या है?"
+              autocomplete="off"
+              disabled
+            />
+            <button id="ask-button" class="button button-primary" type="submit" disabled>
+              जवाब खोजें
+            </button>
+          </form>
+          <p class="privacy-note">
+            दस्तावेज़ इसी browser में पढ़े जाते हैं। AI जवाब के लिए Netlify में
+            <code>OPENAI_API_KEY</code> सेट करें; चुने गए passages ही भेजे जाएंगे।
+          </p>
+        </section>
+
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <section id="answer-section" class="card answer-card" hidden>
+          <h2 id="answer-title">जवाब</h2>
+          <div id="answer-content"></div>
+        </section>
+        <section id="sources-section" class="card sources-card" hidden>
+          <h2>स्रोत passages</h2>
+          <div id="sources-content"></div>
+        </section>
+      </main>
+      <footer>आपके दस्तावेज़ server पर store नहीं होते।</footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,4 +1,7 @@
 .venv/
+node_modules/
+dist/
+.netlify/
 __pycache__/
 *.py[cod]
 .streamlit/secrets.toml

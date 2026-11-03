@@ -1,10 +1,40 @@
 # Document Q&A
 
-A small Streamlit app that reads PDF, DOCX, TXT, and Markdown documents, retrieves
-relevant passages, and answers questions with citations using OpenAI. Without an
-API key, it shows an extractive overview and matching source passages.
+A document question-answering app with two front ends: the original Streamlit
+app and a Netlify-ready browser app. Both read PDF, DOCX, TXT, and Markdown
+documents, find relevant passages, and provide answers with citations using
+OpenAI. Extractive summaries and matching passages are also available without
+an API key.
 
-## Run locally
+## Netlify deployment
+
+The Netlify version is a static browser app with a serverless function for AI
+answers. Documents are extracted and searched in the browser; only the selected
+passages and question are sent to the function when AI answers are requested.
+The OpenAI API key stays in Netlify environment variables and is never included
+in the browser code.
+
+1. In Netlify, choose **Add new site → Import an existing project** and connect
+   `sadikali67011-art/Documents-project`.
+2. Keep the build settings from `netlify.toml` (`npm run build`, publish
+   directory `dist`, functions directory `netlify/functions`).
+3. Optionally add `OPENAI_API_KEY` under **Site configuration → Environment
+   variables**. `OPENAI_MODEL` is optional and defaults to `gpt-4o-mini`.
+4. Deploy the site. Without the API key, uploads, extractive summaries, and
+   matching source passages still work.
+
+Files are processed locally in the browser and are not saved to the server.
+Each file is limited to 20 MB and total extracted text to 1 MB per selection.
+Scanned/image-only PDFs need OCR and are not supported.
+
+To build the Netlify site locally:
+
+```powershell
+npm install
+npm run build
+```
+
+## Run the Streamlit version locally
 
 1. Install Python 3.10 or newer.
 2. From this folder, create and activate a virtual environment:
@@ -59,4 +89,10 @@ Run the retrieval and text-processing tests with:
 
 ```powershell
 python -m unittest discover -s tests -v
+```
+
+Run the Netlify function tests with:
+
+```powershell
+npm test
 ```
