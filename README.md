@@ -3,14 +3,15 @@
 A document question-answering app with two front ends: the original Streamlit
 app and a Netlify-ready browser app. Both read PDF, DOCX, TXT, and Markdown
 documents, find relevant passages, and provide answers with citations using
-OpenAI. Extractive summaries and matching passages are also available without
-an API key.
+OpenAI. Choose from 20 output languages for AI answers and translated summaries.
+Extractive summaries and matching passages are also available without an API key.
 
 ## Netlify deployment
 
 The Netlify version is a static browser app with a serverless function for AI
-answers. Documents are extracted and searched in the browser; only the selected
-passages and question are sent to the function when AI answers are requested.
+answers and translations. Documents are extracted and searched in the browser;
+only the selected passages and question are sent to the function when AI answers
+or summary translations are requested.
 The OpenAI API key stays in Netlify environment variables and is never included
 in the browser code.
 
@@ -18,10 +19,15 @@ in the browser code.
    `sadikali67011-art/Documents-project`.
 2. Keep the build settings from `netlify.toml` (`npm run build`, publish
    directory `dist`, functions directory `netlify/functions`).
-3. Optionally add `OPENAI_API_KEY` under **Site configuration → Environment
-   variables**. `OPENAI_MODEL` is optional and defaults to `gpt-4o-mini`.
+3. Add `OPENAI_API_KEY` under **Site configuration → Environment variables** to
+   enable AI answers and translated summaries. `OPENAI_MODEL` is optional and
+   defaults to `gpt-4o-mini`.
 4. Deploy the site. Without the API key, uploads, extractive summaries, and
-   matching source passages still work.
+   matching source passages still work, but stay in the document's original language.
+
+Supported output languages: Hindi, English, Spanish, French, German, Portuguese,
+Italian, Dutch, Russian, Arabic, Bengali, Simplified Chinese, Japanese, Korean,
+Urdu, Punjabi, Marathi, Tamil, Telugu, and Turkish.
 
 Files are processed locally in the browser and are not saved to the server.
 Each file is limited to 20 MB and total extracted text to 1 MB per selection.
@@ -51,10 +57,10 @@ npm run build
    streamlit run app.py
    ```
 
-4. Open the local URL printed by Streamlit. Optionally enter an OpenAI API key
-   in the sidebar for generated answers. The model defaults to `gpt-4o-mini`.
-   Without a key, use **दस्तावेज़ का सारांश दिखाएँ** for a short overview
-   made from original document sentences; Q&A shows matching source text.
+4. Open the local URL printed by Streamlit. Enter an OpenAI API key in the
+   sidebar for generated answers and translated summaries. Choose an output
+   language from the 20-language selector. The model defaults to `gpt-4o-mini`.
+   Without a key, summaries and matching passages stay in their original language.
    You can also set `OPENAI_API_KEY` and `OPENAI_MODEL` in the environment.
 
 ## Try the included demo

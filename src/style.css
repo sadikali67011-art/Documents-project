@@ -159,6 +159,37 @@ h2 {
   font-size: 13px;
 }
 
+.language-setting {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.language-setting label {
+  color: #536159;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.language-setting select {
+  min-width: 190px;
+  height: 40px;
+  padding: 0 34px 0 11px;
+  border: 1px solid #dbe3de;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #17241f;
+  font: inherit;
+  font-size: 13px;
+}
+
+.language-setting select:focus {
+  border-color: #438d62;
+  box-shadow: 0 0 0 3px rgb(67 141 98 / 12%);
+}
+
 form {
   display: flex;
   gap: 10px;
@@ -337,6 +368,16 @@ footer {
 
   .section-heading {
     align-items: flex-start;
+  }
+
+  .language-setting {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .language-setting select {
+    width: 100%;
   }
 
   .file-types {

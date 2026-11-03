@@ -51,6 +51,31 @@
               सारांश
             </button>
           </div>
+          <div class="language-setting">
+            <label for="answer-language">जवाब / summary की भाषा</label>
+            <select id="answer-language" aria-describedby="language-note">
+              <option value="Hindi" selected>हिन्दी</option>
+              <option value="English">English</option>
+              <option value="Spanish">Español</option>
+              <option value="French">Français</option>
+              <option value="German">Deutsch</option>
+              <option value="Portuguese">Português</option>
+              <option value="Italian">Italiano</option>
+              <option value="Dutch">Nederlands</option>
+              <option value="Russian">Русский</option>
+              <option value="Arabic">العربية</option>
+              <option value="Bengali">বাংলা</option>
+              <option value="Chinese (Simplified)">中文（简体）</option>
+              <option value="Japanese">日本語</option>
+              <option value="Korean">한국어</option>
+              <option value="Urdu">اردو</option>
+              <option value="Punjabi">ਪੰਜਾਬੀ</option>
+              <option value="Marathi">मराठी</option>
+              <option value="Tamil">தமிழ்</option>
+              <option value="Telugu">తెలుగు</option>
+              <option value="Turkish">Türkçe</option>
+            </select>
+          </div>
           <form id="question-form">
             <label class="sr-only" for="question">आपका सवाल</label>
             <input
@@ -65,8 +90,9 @@
             </button>
           </form>
           <p class="privacy-note">
-            दस्तावेज़ इसी browser में पढ़े जाते हैं। AI जवाब के लिए Netlify में
-            <code>OPENAI_API_KEY</code> सेट करें; चुने गए passages ही भेजे जाएंगे।
+            <span id="language-note">AI जवाब और summary चुनी गई भाषा में होंगे।</span>
+            दस्तावेज़ इसी browser में पढ़े जाते हैं। अनुवाद और AI जवाब के लिए Netlify में
+            <code>OPENAI_API_KEY</code> सेट करें; सिर्फ़ चुने गए passages भेजे जाएंगे।
           </p>
         </section>
 

@@ -29,6 +29,7 @@ const fileStatus = document.querySelector("#file-status");
 const fileErrors = document.querySelector("#file-errors");
 const questionInput = document.querySelector("#question");
 const questionForm = document.querySelector("#question-form");
+const languageSelect = document.querySelector("#answer-language");
 const askButton = document.querySelector("#ask-button");
 const summaryButton = document.querySelector("#summary-button");
 const messages = document.querySelector("#messages");
@@ -179,12 +180,15 @@ function showSources(matches) {
   sourcesSection.hidden = matches.length === 0;
 }
 
-function showSummary() {
-  const summary = extractiveSummary(chunks);
+function renderSummary(summary, translatedText = "") {
   answerContent.replaceChildren();
-  if (!summary.length) {
-    addMessage(messages, "दस्तावेज़ में सारांश के लिए text नहीं मिला।", "warning");
-    answerSection.hidden = true;
+  document.querySelector("#answer-title").textContent = translatedText
+    ? `दस्तावेज़ का सारांश — ${languageSelect.selectedOptions[0].textContent}`
+    : "दस्तावेज़ का extractive सारांश";
+  if (translatedText) {
+    answerContent.textContent = translatedText;
+    answerSection.hidden = false;
+    showSources(summary.map((item) => ({ chunk: item.chunk, score: 0 })));
     return;
   }
 
@@ -195,9 +199,64 @@ function showSummary() {
     list.append(item);
   }
   answerContent.append(list);
-  document.querySelector("#answer-title").textContent = "दस्तावेज़ का extractive सारांश";
   answerSection.hidden = false;
   showSources(summary.map((item) => ({ chunk: item.chunk, score: 0 })));
+}
+
+async function showSummary() {
+  const summary = extractiveSummary(chunks);
+  if (!summary.length) {
+    addMessage(messages, "दस्तावेज़ में सारांश के लिए text नहीं मिला।", "warning");
+    answerSection.hidden = true;
+    return;
+  }
+
+  summaryButton.disabled = true;
+  summaryButton.textContent = "अनुवाद हो रहा है…";
+  try {
+    const passages = summary.map(({ chunk, text }, index) => ({
+      label: `S${index + 1}`,
+      source: chunk.source,
+      chunkId: chunk.chunkId,
+      text,
+    }));
+    const translatedText = await requestAi("translate", "", passages);
+    renderSummary(summary, translatedText);
+  } catch (error) {
+    if (error.status === 503) {
+      addMessage(
+        messages,
+        "अनुवाद के लिए Netlify में OPENAI_API_KEY सेट करें। अभी मूल भाषा का summary दिखाया गया है।",
+        "warning",
+      );
+    } else {
+      addMessage(messages, error.message || "Summary का अनुवाद नहीं हो सका।", "error");
+    }
+    renderSummary(summary);
+  } finally {
+    summaryButton.disabled = !chunks.length;
+    summaryButton.textContent = "सारांश";
+  }
+}
+
+async function requestAi(mode, question, passages) {
+  const response = await fetch("/.netlify/functions/answer", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      mode,
+      question,
+      language: languageSelect.value,
+      passages,
+    }),
+  });
+  const result = await response.json();
+  if (!response.ok) {
+    const error = new Error(result.error || "AI जवाब नहीं मिल सका।");
+    error.status = response.status;
+    throw error;
+  }
+  return result.answer;
 }
 
 async function handleFiles(files) {
@@ -251,44 +310,36 @@ async function answerQuestion(question) {
   }
 
   if (isSummaryQuestion(question)) {
-    showSummary();
+    await showSummary();
     return;
   }
 
   try {
     askButton.disabled = true;
     askButton.textContent = "जवाब तैयार हो रहा है…";
-    const response = await fetch("/.netlify/functions/answer", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        question: question.trim(),
-        passages: selected.map(({ chunk }, index) => ({
-          label: `S${index + 1}`,
-          source: chunk.source,
-          chunkId: chunk.chunkId,
-          text: chunk.text,
-        })),
-      }),
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      if (response.status === 503) {
-        addMessage(
-          messages,
-          "AI जवाब के लिए Netlify में OPENAI_API_KEY सेट करें। नीचे संबंधित मूल text दिया है।",
-          "warning",
-        );
-      } else {
-        throw new Error(result.error || "AI जवाब नहीं मिल सका।");
-      }
-    } else {
-      answerContent.textContent = result.answer;
-      document.querySelector("#answer-title").textContent = "जवाब";
-      answerSection.hidden = false;
-    }
+    const answer = await requestAi(
+      "answer",
+      question.trim(),
+      selected.map(({ chunk }, index) => ({
+        label: `S${index + 1}`,
+        source: chunk.source,
+        chunkId: chunk.chunkId,
+        text: chunk.text,
+      })),
+    );
+    answerContent.textContent = answer;
+    document.querySelector("#answer-title").textContent = `जवाब — ${languageSelect.selectedOptions[0].textContent}`;
+    answerSection.hidden = false;
   } catch (error) {
-    addMessage(messages, error.message || "AI जवाब नहीं मिल सका।", "error");
+    if (error.status === 503) {
+      addMessage(
+        messages,
+        "AI जवाब के लिए Netlify में OPENAI_API_KEY सेट करें। नीचे संबंधित मूल text दिया है।",
+        "warning",
+      );
+    } else {
+      addMessage(messages, error.message || "AI जवाब नहीं मिल सका।", "error");
+    }
   } finally {
     showSources(selected);
     askButton.disabled = !chunks.length || !questionInput.value.trim();
@@ -304,7 +355,7 @@ questionInput.addEventListener("input", () => {
 });
 summaryButton.addEventListener("click", () => {
   messages.replaceChildren();
-  showSummary();
+  void showSummary();
 });
 questionForm.addEventListener("submit", (event) => {
   event.preventDefault();
